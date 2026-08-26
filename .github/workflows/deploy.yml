@@ -1,30 +1,37 @@
-name: CI/CD - Verify & Deploy sur GitHub Pages
+name: CI/CD - Build, Test & Deploy sur GitHub Pages
 
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
 
 jobs:
-  verify:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout du code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Vérifier que index.html existe
         run: test -f index.html
+
+      - name: charger les fichiers
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: .
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Télécharger l'artefact de build
+        uses: actions/download-artifact@v4
+        with:
+          name: site-build
+          path: .
 
       - name: Valider le HTML (W3C)
         uses: Cyb3r-Jak3/html5validator-action@v7
@@ -39,14 +46,17 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: verify
+    needs: [build, test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
+      - name: Télécharger l'artefact de build
+        uses: actions/download-artifact@v4
+        with:
+          name: site-build
+          path: .
 
       - name: Préparer les fichiers pour GitHub Pages
         uses: actions/upload-pages-artifact@v3
