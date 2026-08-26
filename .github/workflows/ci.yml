@@ -1,0 +1,51 @@
+name: CI/CD test Kael
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Vérifier que index.html existe
+        run: test -f index.html
+
+      - name: Valider le HTML (W3C)
+        uses: Cyb3r-Jak3/html5validator-action@v7
+        with:
+          root: .
+
+      - name: Vérifier les liens cassés
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: --no-progress './**/*.html'
+          fail: true
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Préparer les fichiers pour GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Déployer sur GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
