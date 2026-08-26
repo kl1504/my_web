@@ -1,5 +1,9 @@
-// focus the cursor on the email-address input
-const emailField = document.getElementById("email-address-input");
-emailField.focus({
-  preventScroll: true,
+let compteur = 0;
+
+const btn = document.getElementById("btn");
+const affichage = document.getElementById("compteur");
+
+btn.addEventListener("click", () => {
+  compteur++;
+  affichage.textContent = `Clics : ${compteur}`;
 });

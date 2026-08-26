@@ -1,15 +1,14 @@
-# E-Commerce website html css
+# Mini Projet
 
-in this repository you will see an html css template for a cool designed e-commerce website.
+Petit site statique HTML / CSS / JavaScript avec pipeline CI/CD GitHub Actions vers GitHub Pages.
 
-## :heavy_check_mark: useful for who:
+## Structure
+- `index.html` — page principale
+- `style.css` — styles
+- `script.js` — interactivité (compteur de clics)
+- `.github/workflows/deploy.yml` — pipeline : validation HTML, vérification des liens, déploiement sur GitHub Pages
 
--   wants to practice your html css skills
-
-## :heavy_check_mark: Authors
-
--   created by Alireza Tayebinejad from: [@vibracode](https://www.github.com/octokatherine)
-
-## :heavy_check_mark: License
-
-free for everyone to use in any good purposes :heart:
+## Déploiement
+1. Pousse ce projet sur un dépôt GitHub.
+2. Dans **Settings → Pages → Source**, choisis **GitHub Actions**.
+3. À chaque push sur `main`, le site est vérifié puis déployé automatiquement.
